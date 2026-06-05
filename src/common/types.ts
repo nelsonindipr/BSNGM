@@ -517,6 +517,14 @@ export type TragicDeaths = {
 
 type FootballOvertime = "suddenDeath" | "exceptFg" | "bothPossess";
 
+export type ImportPlayerRules = {
+	enabled: boolean;
+	domesticCountries: string[];
+	maxImportedPlayersPerRoster: number | null;
+	maxImportedPlayersActive: number | null;
+	hardEnforcement: boolean;
+};
+
 export type GameAttributesLeague = {
 	aiJerseyRetirement: boolean;
 	aiTradesFactor: number;
@@ -602,6 +610,7 @@ export type GameAttributesLeague = {
 	inflationMin: number;
 	inflationStd: number;
 	injuries?: InjuriesSetting;
+	importPlayerRules?: ImportPlayerRules;
 	injuryRate: number;
 	lid: number;
 	lowestDifficulty: number;
