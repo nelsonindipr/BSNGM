@@ -18,8 +18,6 @@ const rules: ImportPlayerRules = {
 	enabled: true,
 	domesticCountries: ["Puerto Rico", "USA"],
 	maxImportedPlayersPerRoster: 2,
-	maxImportedPlayersActive: null,
-	hardEnforcement: true,
 };
 
 describe("importPlayerRules", () => {

@@ -521,8 +521,6 @@ export type ImportPlayerRules = {
 	enabled: boolean;
 	domesticCountries: string[];
 	maxImportedPlayersPerRoster: number | null;
-	maxImportedPlayersActive: number | null;
-	hardEnforcement: boolean;
 };
 
 export type GameAttributesLeague = {
