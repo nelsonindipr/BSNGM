@@ -19,7 +19,10 @@ import type { HandleChange, HandleChangeRaw } from "./SettingsFormOptions.tsx";
 import type { State } from "./SettingsForm.tsx";
 import RowsEditor from "./RowsEditor.tsx";
 import PlayerBioInfo2 from "./PlayerBioInfo.tsx";
-import type { GameAttributesLeague } from "../../../common/types.ts";
+import type {
+	GameAttributesLeague,
+	ImportPlayerRules,
+} from "../../../common/types.ts";
 import { parseCurrencyFormat } from "../../util/parseCurrencyFormat.ts";
 import { getDraftTypeDescription } from "../DraftLottery.tsx";
 import { bySport, isSport } from "../../../common/sportFunctions.ts";
@@ -73,6 +76,180 @@ type Setting = {
 
 	// Longer than one line, hidden by default
 	descriptionLong?: ReactNode;
+};
+
+const blankImportPlayerRules: ImportPlayerRules = {
+	enabled: true,
+	domesticCountries: [],
+	maxImportedPlayersPerRoster: null,
+	maxImportedPlayersActive: null,
+	hardEnforcement: true,
+};
+
+const parseForeignPlayerLimit = (value: string) => {
+	if (value.trim() === "") {
+		return null;
+	}
+
+	const parsed = Number.parseInt(value, 10);
+	return Number.isNaN(parsed) ? null : parsed;
+};
+
+const validateImportPlayerRules = (value: ImportPlayerRules | undefined) => {
+	if (!value?.enabled) {
+		return;
+	}
+
+	if (value.domesticCountries.length === 0) {
+		throw new Error("Domestic Countries must include at least one country");
+	}
+
+	for (const [name, limit] of [
+		["Max Foreign Players on Roster", value.maxImportedPlayersPerRoster],
+		["Max Foreign Players Active", value.maxImportedPlayersActive],
+	] as const) {
+		if (limit !== null && (!Number.isInteger(limit) || limit < 0)) {
+			throw new Error(`${name} must be blank or a non-negative integer`);
+		}
+	}
+};
+
+const ForeignPlayerRulesForm = ({
+	disabled,
+	id,
+	inputStyle,
+	state,
+	handleChangeRaw,
+}: {
+	disabled: boolean;
+	id: string;
+	inputStyle: CSSProperties;
+	state: State;
+	handleChangeRaw: HandleChangeRaw;
+}) => {
+	const rules = state.importPlayerRules;
+	const enabled = rules?.enabled === true;
+	const update = (partial: Partial<ImportPlayerRules> | undefined) => {
+		if (partial === undefined) {
+			handleChangeRaw("importPlayerRules")(undefined);
+			return;
+		}
+
+		handleChangeRaw("importPlayerRules")({
+			...blankImportPlayerRules,
+			...rules,
+			...partial,
+		});
+	};
+	const inputsDisabled = disabled || !enabled;
+
+	return (
+		<div style={{ minWidth: 260 }}>
+			<div className="form-check form-switch mb-2">
+				<input
+					className="form-check-input"
+					type="checkbox"
+					id={id}
+					disabled={disabled}
+					checked={enabled}
+					onChange={(event) => {
+						if (event.target.checked) {
+							update({ enabled: true });
+						} else {
+							update(undefined);
+						}
+					}}
+				/>
+				<label className="form-check-label" htmlFor={id}>
+					Enabled
+				</label>
+			</div>
+			<div className="row g-2">
+				<div className="col-12">
+					<label className="form-label mb-1" htmlFor={`${id}-countries`}>
+						Domestic Countries
+					</label>
+					<input
+						className="form-control"
+						disabled={inputsDisabled}
+						id={`${id}-countries`}
+						onChange={(event) => {
+							update({
+								domesticCountries: event.target.value
+									.split(",")
+									.map((country) => country.trim())
+									.filter(Boolean),
+							});
+						}}
+						placeholder="USA, Canada"
+						value={rules?.domesticCountries.join(", ") ?? ""}
+					/>
+				</div>
+				<div className="col-sm-6">
+					<label className="form-label mb-1" htmlFor={`${id}-roster`}>
+						Max Foreign Players on Roster
+					</label>
+					<input
+						className="form-control"
+						disabled={inputsDisabled}
+						id={`${id}-roster`}
+						inputMode="numeric"
+						onChange={(event) => {
+							update({
+								maxImportedPlayersPerRoster: parseForeignPlayerLimit(
+									event.target.value,
+								),
+							});
+						}}
+						placeholder="No limit"
+						style={inputStyle}
+						value={rules?.maxImportedPlayersPerRoster ?? ""}
+					/>
+				</div>
+				<div className="col-sm-6">
+					<label className="form-label mb-1" htmlFor={`${id}-active`}>
+						Max Foreign Players Active
+					</label>
+					<input
+						className="form-control"
+						disabled={inputsDisabled}
+						id={`${id}-active`}
+						inputMode="numeric"
+						onChange={(event) => {
+							update({
+								maxImportedPlayersActive: parseForeignPlayerLimit(
+									event.target.value,
+								),
+							});
+						}}
+						placeholder="No limit"
+						style={inputStyle}
+						value={rules?.maxImportedPlayersActive ?? ""}
+					/>
+				</div>
+				<div className="col-12">
+					<div className="form-check">
+						<input
+							className="form-check-input"
+							type="checkbox"
+							id={`${id}-hard-enforcement`}
+							disabled={inputsDisabled}
+							checked={rules?.hardEnforcement ?? true}
+							onChange={(event) => {
+								update({ hardEnforcement: event.target.checked });
+							}}
+						/>
+						<label
+							className="form-check-label"
+							htmlFor={`${id}-hard-enforcement`}
+						>
+							Hard Enforcement
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export const settings: Setting[] = (
@@ -379,6 +556,25 @@ export const settings: Setting[] = (
 			name: "Max Roster Size",
 			godModeRequired: "always",
 			type: "int",
+		},
+		{
+			category: "Teams",
+			key: "importPlayerRules",
+			name: "Foreign Player Rules",
+			type: "custom",
+			customForm: ({ disabled, handleChangeRaw, id, inputStyle, state }) => (
+				<ForeignPlayerRulesForm
+					disabled={disabled}
+					handleChangeRaw={handleChangeRaw}
+					id={id}
+					inputStyle={inputStyle}
+					state={state}
+				/>
+			),
+			description:
+				"Optionally limit roster spots for players whose birth country is outside the configured domestic countries.",
+			maxWidth: true,
+			validator: validateImportPlayerRules,
 		},
 		{
 			category: "Playoffs",

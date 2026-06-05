@@ -6,6 +6,7 @@ export type Key =
 	| "quarterLength"
 	| "minRosterSize"
 	| "maxRosterSize"
+	| "importPlayerRules"
 	| "numGamesPlayoffSeries"
 	| "numPlayoffByes"
 	| "draftType"

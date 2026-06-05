@@ -25,6 +25,10 @@ export const getDefaultSettings = () => {
 		quarterLength: unwrapGameAttribute(defaultGameAttributes, "quarterLength"),
 		maxRosterSize: unwrapGameAttribute(defaultGameAttributes, "maxRosterSize"),
 		minRosterSize: unwrapGameAttribute(defaultGameAttributes, "minRosterSize"),
+		importPlayerRules: unwrapGameAttribute(
+			defaultGameAttributes,
+			"importPlayerRules",
+		),
 		salaryCap: unwrapGameAttribute(defaultGameAttributes, "salaryCap"),
 		minPayroll: unwrapGameAttribute(defaultGameAttributes, "minPayroll"),
 		luxuryPayroll: unwrapGameAttribute(defaultGameAttributes, "luxuryPayroll"),

@@ -10,6 +10,7 @@ import type { Key, Values } from "./types.ts";
 import type { Settings } from "../../../worker/views/settings.ts";
 import type {
 	GameAttributesLeague,
+	ImportPlayerRules,
 	InjuriesSetting,
 	PlayerBioInfo,
 	TragicDeaths,
@@ -211,6 +212,7 @@ export const SPECIAL_STATE_OTHERS = [
 	"injuries",
 	"tragicDeaths",
 	"playerBioInfo",
+	"importPlayerRules",
 ] as const;
 export const SPECIAL_STATE_BOOLEANS = ["godMode", "godModeInPast"] as const;
 export const SPECIAL_STATE_ALL = [
@@ -228,6 +230,7 @@ export type State = Record<
 		injuries: InjuriesSetting;
 		tragicDeaths: TragicDeaths;
 		playerBioInfo: PlayerBioInfo | undefined;
+		importPlayerRules: ImportPlayerRules | undefined;
 		saveOldBoxScores: Omit<
 			GameAttributesLeague["saveOldBoxScores"],
 			"pastSeasons"

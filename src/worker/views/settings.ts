@@ -20,6 +20,7 @@ type Key =
 	| "quarterLength"
 	| "maxRosterSize"
 	| "minRosterSize"
+	| "importPlayerRules"
 	| "salaryCap"
 	| "minPayroll"
 	| "luxuryPayroll"
@@ -239,6 +240,7 @@ const updateSettings = async (inputs: unknown, updateEvents: UpdateEvents) => {
 			quarterLength: g.get("quarterLength"),
 			maxRosterSize: g.get("maxRosterSize"),
 			minRosterSize: g.get("minRosterSize"),
+			importPlayerRules: g.get("importPlayerRules"),
 			salaryCap: g.get("salaryCap"),
 			minPayroll: g.get("minPayroll"),
 			luxuryPayroll: g.get("luxuryPayroll"),
