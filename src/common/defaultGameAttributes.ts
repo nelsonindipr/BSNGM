@@ -157,6 +157,7 @@ export const defaultGameAttributes: GameAttributesLeagueWithHistory = {
 	nextPhase: undefined, // Used only for fantasy draft
 	playerBioInfo: undefined,
 	injuries: undefined,
+	importPlayerRules: undefined,
 	tragicDeaths: undefined,
 	daysLeft: 0, // Used only for free agency
 	gameOver: false,
